@@ -33,14 +33,14 @@ model Website {
 
 model Region {
   id           String        @id @default(uuid())
-  name         String 
+  name         String    @unique
   website_tick WebsiteTick[]
 }
 
 model WebsiteTick {
   id               String        @id @default(uuid())
   response_time_ms Int
-  status           WebsiteStatus
+  status           WebsiteStatus 
   region           Region        @relation(fields: [region_id], references: [id])
   website          Website       @relation(fields: [website_id], references: [id])
   region_id        String

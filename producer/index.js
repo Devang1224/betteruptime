@@ -1,35 +1,46 @@
-const {createClient} = require("redis");
+const { createClient } = require("redis");
+const prisma = require("../server/db");
 
+async function main() {
+  console.log("running the producer............");
 
+  const client = await createClient()
+    .on("error", (err) => console.log("redis client error", err))
+    .connect();
 
-async function main (){
+  const websites = await prisma.Website.findMany();
 
-    
-    const client = await createClient().on("error",(err)=>console.log("redis client error",err)).connect();
-    
+  console.log("pushing websites to the stream...................");
 
-    
-    const res1 = await client.xAdd(
-        'betteruptime:website','*',{
-            url:"https://google.com",
-            id: Date.now().toString(),
-        }
-    )
-    
-    console.log(res1)
+  for (const site of websites) {
+    const res = await client.xAdd("betteruptime:website", "*", {
+      url: site.url,
+      id: site.id,
+    });
+    console.log(`Pushed site ${site.url} → Redis ID: ${res}`);
+  }
 
-   const readRes1 = await client.xRead({
-    key:'betteruptime:website',
-    id:'1753355744141-0'
-   },{
-    count:10,
-    block:300
-   })
-    console.log(readRes1)
+  console.log("--------pushed all the sites to redis stream");
 
-   client.destroy();
+  //     const res1 = await client.xAdd(
+  //         'betteruptime:website','*',{
+  //             url:"https://google.com",
+  //             id: Date.now().toString(),
+  //         }
+  //     )
 
+  //     console.log(res1)
 
+  //    const readRes1 = await client.xRead({
+  //     key:'betteruptime:website',
+  //     id:'1753355744141-0'
+  //    },{
+  //     count:10,
+  //     block:300
+  //    })
+  //     console.log(readRes1)
+
+   await client.quit();
 }
 
-main();
+setInterval(() => main(), 10 * 1000); // after 10 seconds

@@ -131,6 +131,27 @@ app.post("/user/login",async(req,res)=>{
   }
 })
 
+app.post("/addRegion",async(req,res)=>{
+  try{
+     const {region} = req.body;
+     if(!region){
+       return res.status(409).json({message:"Invalid request body, required region"});
+     }
+     const resRegion = await prisma.Region.create({
+      data:{
+        name:region
+      }
+     })
+
+     if(resRegion){
+      return res.status(200).json({message:"Region added successfully",data:resRegion});
+     }
+
+  }catch(err){
+    return res.status(500).json({message:"error while adding the region",error:err});
+  }
+})
+
 
 app.listen(process.env.PORT,()=>{
     console.log("server is started");
