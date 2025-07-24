@@ -56,7 +56,7 @@ app.get("/status/:websiteId",async (req,res)=>{
         }
 
         return res.status(200).json({
-          message:"website found",
+          message:"website's data fetched successfully",
           data:website,
           success:true
         })
