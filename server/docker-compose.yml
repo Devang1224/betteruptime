@@ -9,7 +9,7 @@ services:
     ports:
       - "5433:5432"   
     volumes:
-      - betteruptime_data:/betteruptime/data/db
+      - betteruptime_data:/var/lib/postgresql/data
 
 volumes: 
   betteruptime_data:

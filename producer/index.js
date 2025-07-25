@@ -11,7 +11,7 @@ async function main() {
   const websites = await prisma.Website.findMany();
 
   console.log("pushing websites to the stream...................");
-
+   console.log("websites length",websites.length)
   for (const site of websites) {
     const res = await client.xAdd("betteruptime:website", "*", {
       url: site.url,
@@ -43,4 +43,4 @@ async function main() {
    await client.quit();
 }
 
-setInterval(() => main(), 10 * 1000); // after 10 seconds
+setInterval(() => main(),  10 * 1000); 
